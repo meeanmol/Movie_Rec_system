@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import difflib
+import joblib
 
 # Page configuration
 st.set_page_config(
@@ -125,8 +126,8 @@ class MovieRecommender:
         """Load the pre-trained model components (vectorizer, similarity matrix, and data)"""
         try:
             # Load the model bundle from pickle file
-            with open(self.model_path, 'rb') as f:
-                model_bundle = pickle.load(f)
+           
+                model_bundle = joblib.load("model_compressed.pkl")
 
             # Extract model components
             self.vectorizer = model_bundle.get('vectorizer', None)
@@ -388,4 +389,5 @@ def main():
     """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
+
     main()
