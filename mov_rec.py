@@ -22,7 +22,7 @@ st.markdown("""
     }
     
     .main-header {
-        font-size: 3.5rem;
+        font-size: 4.5rem;
         background: linear-gradient(45deg, #FF6B6B, #EE5A24);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -389,3 +389,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
