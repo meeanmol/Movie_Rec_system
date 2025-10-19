@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import pickle
 import difflib
+import gdown
+import os
 
 # Page configuration
 st.set_page_config(
@@ -118,14 +120,50 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+class ModelDownloader:
+    @staticmethod
+    def download_from_google_drive():
+        """Download model from Google Drive"""
+        model_path = "movie_recommender_model.pkl"
+        
+        # 🔽🔽🔽 REPLACE THIS FILE_ID WITH YOUR ACTUAL GOOGLE DRIVE FILE ID 🔽🔽🔽
+        FILE_ID = "1n69PDkG6legNOpTB9_OWgJdYtKnoKBj_"  # ← REPLACE THIS!
+        # 🔼🔼🔼 REPLACE THIS FILE_ID WITH YOUR ACTUAL GOOGLE DRIVE FILE ID 🔼🔼🔼
+        
+        if not os.path.exists(model_path):
+            with st.spinner("📥 Downloading AI model from Google Drive (this may take a minute)..."):
+                try:
+                    # Download from Google Drive
+                    url = f'https://drive.google.com/uc?id={FILE_ID}'
+                    gdown.download(url, model_path, quiet=False)
+                    
+                    # Verify download
+                    if os.path.exists(model_path):
+                        file_size = os.path.getsize(model_path) / (1024 * 1024)
+                        st.success(f"✅ Model downloaded successfully! ({file_size:.1f} MB)")
+                    else:
+                        st.error("❌ Model download failed")
+                        return None
+                        
+                except Exception as e:
+                    st.error(f"❌ Failed to download model: {e}")
+                    return None
+        
+        return model_path
+
 class MovieRecommender:
     def __init__(self):
-        self.model_path = "movie_recommender_model.pkl"  # Fixed model path
+        self.model_path = ModelDownloader.download_from_google_drive()
         self.data_path = "movies.csv"        # Fixed data path
         self.model_components = None
         self.data = None
         self.similarity_matrix = None
-        self.load_model()
+        
+        if self.model_path and os.path.exists(self.model_path):
+            self.load_model()
+        else:
+            st.error("❌ Could not load model file. Please check your Google Drive link.")
+            st.stop()
     
     def load_model(self):
         """Load the pre-trained model components"""
@@ -150,7 +188,7 @@ class MovieRecommender:
             st.success(f"🎉 **{len(self.data)} movies loaded successfully!**")
             
         except FileNotFoundError:
-            st.error("❌ Model file not found. Please check the file paths.")
+            st.error("❌ Data file not found. Please check the file paths.")
             st.stop()
         except Exception as e:
             st.error(f"❌ Error loading model: {e}")
@@ -394,5 +432,4 @@ def main():
     st.markdown('</div>', unsafe_allow_html=True)  # Close main container
 
 if __name__ == "__main__":
-
     main()
