@@ -126,8 +126,7 @@ class MovieRecommender:
         """Load the pre-trained model components (vectorizer, similarity matrix, and data)"""
         try:
             # Load the model bundle from pickle file
-           
-                model_bundle = joblib.load("model_compressed.pkl")
+            model_bundle = joblib.load("model_compressed.pkl")
 
             # Extract model components
             self.vectorizer = model_bundle.get('vectorizer', None)
@@ -389,5 +388,4 @@ def main():
     """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
-
     main()
