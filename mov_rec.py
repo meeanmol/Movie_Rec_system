@@ -386,7 +386,7 @@ def main():
     st.markdown("""
     <div style='text-align: center; margin-top: 3rem; padding: 2rem; background: rgba(255, 255, 255, 0.1); border-radius: 15px;'>
         <p <h2 style='color: #666; margin: 0; font-size: 1.1rem;'>
-        Anmol Yadav | Built with using Streamlit</h2>
+        Anmol Yadav | Powered by Machine Learning & Data Science | Built with using Streamlit</h2>
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -394,4 +394,5 @@ def main():
     st.markdown('</div>', unsafe_allow_html=True)  # Close main container
 
 if __name__ == "__main__":
+
     main()
