@@ -22,15 +22,17 @@ st.markdown("""
     }
     
     .main-header {
-        font-size: 6.5rem;
-        background: linear-gradient(45deg, #FF6B6B, #EE5A24);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-align: center;
-        margin-bottom: 1rem;
-        font-weight: bold;
-    }
-    
+    font-size: 6rem;
+    background: linear-gradient(45deg, #FF6B6B, #EE5A24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 900;
+    padding: 2rem 0;
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+}
     .sub-header {
         font-size: 1.5rem;
         color: #2D3748;
@@ -389,5 +391,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
