@@ -21,9 +21,13 @@ Our system uses **content-based filtering**, which means it analyzes the actual 
    - 📖 Plot descriptions and storylines
    - ⭐ User ratings and reviews
 
-2. **Smart Matching**: Using **TF-IDF (Term Frequency-Inverse Document Frequency)**, our system understands which words and themes are most important in each movie's description.
+   ![ml 6](https://github.com/user-attachments/assets/e95b43fa-3316-49f7-a039-0453f130762f)
+   
+   ![ml 7](https://github.com/user-attachments/assets/9dd70313-bcb1-44c8-9929-84d678a4dbcb)
 
-3. **Similarity Detection**: Through **cosine similarity**, we mathematically calculate how closely movies resemble each other based on their features.
+3. **Smart Matching**: Using **TF-IDF (Term Frequency-Inverse Document Frequency)**, our system understands which words and themes are most important in each movie's description.
+
+4. **Similarity Detection**: Through **cosine similarity**, we mathematically calculate how closely movies resemble each other based on their features.
 
    ![ml 5](https://github.com/user-attachments/assets/3ea9f8dc-4dbe-453b-a793-2d295533cb1f)
 
