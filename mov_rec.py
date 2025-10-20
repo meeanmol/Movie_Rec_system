@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 import pickle
 import difflib
-import gdown
-import os
 
 # Page configuration
 st.set_page_config(
@@ -24,7 +22,7 @@ st.markdown("""
     
     .main-header {
         font-size: 3.5rem;
-        background: #D35400;
+        background: linear-gradient(45deg, #FF6B6B, #EE5A24);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
@@ -82,13 +80,7 @@ st.markdown("""
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
     
-    .input-section {
-        background: rgba(255, 255, 255, 0.8);
-        padding: 2rem;
-        border-radius: 20px;
-        margin: 2rem 0;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    }
+   
     
     .stButton button {
         background: linear-gradient(45deg, #FF6B6B, #EE5A24);
@@ -120,79 +112,45 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-class ModelDownloader:
-    @staticmethod
-    def download_from_google_drive():
-        """Download model from Google Drive"""
-        model_path = "movie_recommender_model.pkl"
-        
-        # 🔽🔽🔽 REPLACE THIS FILE_ID WITH YOUR ACTUAL GOOGLE DRIVE FILE ID 🔽🔽🔽
-        FILE_ID = "1n69PDkG6legNOpTB9_OWgJdYtKnoKBj_"  # ← REPLACE THIS!
-        # 🔼🔼🔼 REPLACE THIS FILE_ID WITH YOUR ACTUAL GOOGLE DRIVE FILE ID 🔼🔼🔼
-        
-        if not os.path.exists(model_path):
-            with st.spinner("📥 Downloading AI model from Google Drive (this may take a minute)..."):
-                try:
-                    # Download from Google Drive
-                    url = f'https://drive.google.com/uc?id={FILE_ID}'
-                    gdown.download(url, model_path, quiet=False)
-                    
-                    # Verify download
-                    if os.path.exists(model_path):
-                        file_size = os.path.getsize(model_path) / (1024 * 1024)
-                        st.success(f"✅ Model downloaded successfully! ({file_size:.1f} MB)")
-                    else:
-                        st.error("❌ Model download failed")
-                        return None
-                        
-                except Exception as e:
-                    st.error(f"❌ Failed to download model: {e}")
-                    return None
-        
-        return model_path
-
 class MovieRecommender:
     def __init__(self):
-        self.model_path = ModelDownloader.download_from_google_drive()
+        self.model_path = "movie_recommender_model.pkl"  # Fixed model path
         self.data_path = "movies.csv"        # Fixed data path
         self.model_components = None
         self.data = None
         self.similarity_matrix = None
-        
-        if self.model_path and os.path.exists(self.model_path):
-            self.load_model()
-        else:
-            st.error("❌ Could not load model file. Please check your Google Drive link.")
-            st.stop()
+        self.load_model()
     
     def load_model(self):
-        """Load the pre-trained model components"""
+        """Load the pre-trained model components (vectorizer, similarity matrix, and data)"""
         try:
-            # Load the model
+            # Load the model bundle from pickle file
             with open(self.model_path, 'rb') as f:
-                self.model_components = pickle.load(f)
-            
-            # Load the data
-            self.data = pd.read_csv(self.data_path)
-            
-            # Extract similarity matrix
-            if isinstance(self.model_components, np.ndarray):
-                self.similarity_matrix = self.model_components
-            elif isinstance(self.model_components, dict):
-                self.similarity_matrix = self.model_components.get('similarity_matrix')
-                if 'data' in self.model_components:
-                    self.data = self.model_components['data']
+                model_bundle = pickle.load(f)
+
+            # Extract model components
+            self.vectorizer = model_bundle.get('vectorizer', None)
+            self.similarity_matrix = model_bundle.get('similarity_matrix', None)
+            self.data = model_bundle.get('data', None)
+
+            # Validation
+            if self.data is not None:
+                st.success(f"🎬 Loaded {len(self.data)} movies successfully!")
             else:
-                self.similarity_matrix = self.model_components
-            
-            st.success(f"🎉 **{len(self.data)} movies loaded successfully!**")
-            
+                st.warning("⚠️ Data not found inside the model file.")
+
+            if self.vectorizer is None or self.similarity_matrix is None:
+                st.warning("⚠️ Some components (vectorizer/similarity) are missing in model file.")
+            else:
+                st.info("✅ Model components loaded successfully!")
+
         except FileNotFoundError:
-            st.error("❌ Data file not found. Please check the file paths.")
+            st.error("❌ Model file not found. Please make sure the .pkl file exists in your project folder.")
             st.stop()
         except Exception as e:
             st.error(f"❌ Error loading model: {e}")
             st.stop()
+
     
     def get_recommendations(self, movie_name, n_recommendations=10):
         """Get movie recommendations using the pre-trained model"""
@@ -270,7 +228,7 @@ def display_recommendations_results(recommendations, matched_movie, show_similar
     with col1:
         st.markdown(f"""
         <div class='metric-card'>
-            <h3>📊Recommendations</h3>
+            <h3>📊 Recommendations</h3>
             <h1 style='font-size: 3rem; margin: 0;'>{len(recommendations)}</h1>
         </div>
         """, unsafe_allow_html=True)
@@ -278,7 +236,7 @@ def display_recommendations_results(recommendations, matched_movie, show_similar
     with col2:
         st.markdown(f"""
         <div class='metric-card'>
-            <h2>🎯 Avg Match</h2>
+            <h3>🎯 Avg Match</h3>
             <h1 style='font-size: 3rem; margin: 0;'>{avg_similarity*100:.1f}%</h1>
         </div>
         """, unsafe_allow_html=True)
@@ -287,14 +245,14 @@ def display_recommendations_results(recommendations, matched_movie, show_similar
         if avg_rating != 'N/A':
             st.markdown(f"""
             <div class='metric-card'>
-                <h2>⭐ Avg Rating</h2>
+                <h3>⭐ Avg Rating</h3>
                 <h1 style='font-size: 3rem; margin: 0;'>{avg_rating:.1f}/10</h1>
             </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown(f"""
             <div class='metric-card'>
-                <h2>⭐ Avg Rating</h2>
+                <h3>⭐ Avg Rating</h3>
                 <h1 style='font-size: 3rem; margin: 0;'>N/A</h1>
             </div>
             """, unsafe_allow_html=True)
@@ -334,12 +292,9 @@ def display_recommendations_results(recommendations, matched_movie, show_similar
                 st.markdown("---")
 
 def main():
-    # Main container
-    st.markdown('<div class="main-container">', unsafe_allow_html=True)
-    
     # Header
     st.markdown('<h1 class="main-header">CineMatch</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header"> Discover Your Next Favorite Movie with Ml Recommendations Model </p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-header">Discover Your Next Favorite Movie with ML Recommendations Model</p>', unsafe_allow_html=True)
     
     # Initialize recommender
     if 'recommender' not in st.session_state:
@@ -348,6 +303,8 @@ def main():
     
     recommender = st.session_state.recommender
     
+    # Input section
+    st.markdown('<div class="input-section">', unsafe_allow_html=True)
     
     col1, col2 = st.columns([2, 1])
     
@@ -387,21 +344,22 @@ def main():
             show_details = st.checkbox("**📖 Show movie details**", value=True)
     
     with col2:
-        st.markdown("""
+        st.markdown(f"""
         <div style='background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%); padding: 1.5rem; border-radius: 15px; color: white; height: 100%;'>
             <h3 style='color: white; margin-top: 0;'>✨ How It Works</h3>
             <p style='color: white; font-size: 0.9rem;'>
             • Tell us a movie you enjoy<br>
             • Our AI analyzes its features<br>
             • Discover similar movies instantly<br>
-            • Find your next favorite!
+            • Find your next favorite!<br>
+            • This model trained with Hollywood Movies!        
             </p>
             <div style='text-align: center; margin-top: 1rem;'>
-                <h2 style='color: white; font-size: 2rem; margin: 0;'>{}</h2>
+                <h2 style='color: white; font-size: 2rem; margin: 0;'>{len(recommender.data)}</h2>
                 <p style='color: white; margin: 0;'>Movies Ready</p>
             </div>
         </div>
-        """.format(len(recommender.data)), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)  # Close input section
     
@@ -423,13 +381,11 @@ def main():
     # Footer
     st.markdown("""
     <div style='text-align: center; margin-top: 3rem; padding: 2rem; background: rgba(255, 255, 255, 0.1); border-radius: 15px;'>
-        <p <h2 style='color: #666; margin: 0; font-size: 1.1rem;'>
-        Anmol Yadav | Powered by Machine Learning & Data Science | Built with using Streamlit</h2>
-        </p>
+        <h2 style='color: #666; margin: 0; font-size: 1.1rem;'>
+        Anmol Yadav | Powered by Machine Learning & Data Science
+        </h2>
     </div>
     """, unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)  # Close main container
 
 if __name__ == "__main__":
     main()
