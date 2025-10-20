@@ -117,8 +117,8 @@ st.markdown("""
 
 class MovieRecommender:
     def __init__(self):
-        self.model_path = "model_compressed.pkl"  # Fixed model path
-        self.data_path = "movies.csv"        # Fixed data path
+        self.model_path = "04_model_compressed.pkl"  
+        self.data_path = "05_movies.csv"       
         self.model_components = None
         self.data = None
         self.similarity_matrix = None
@@ -391,6 +391,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
