@@ -114,7 +114,7 @@ st.markdown("""
 
 class MovieRecommender:
     def __init__(self):
-        self.model_path = "movie_recommender_model.pkl"  # Fixed model path
+        self.model_path = "model_compressed.pkl"  # Fixed model path
         self.data_path = "movies.csv"        # Fixed data path
         self.model_components = None
         self.data = None
