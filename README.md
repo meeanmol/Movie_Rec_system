@@ -72,6 +72,7 @@ So it might recommend "The Departed" (crime thriller with complex characters) or
 This technology represents the next step in personalized entertainment. Instead of relying on generic categories or what's "popular," CineMatch understands your individual taste and recommends movies that specifically match your preferences.
 
 
-# Built with passion for cinema and powered by machine learn!
-## Anmol Yadav | Data Science & AI Enthusiast..!
+ 
+ ### Built with passion for cinema and powered by machine learn!
+ # Anmol Yadav | Data Science & AI Enthusiast..!
 
